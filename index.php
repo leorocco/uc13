@@ -1,6 +1,47 @@
 <?php
-    session_start();
+session_start();
+
+// Verifica se o formulário de login foi enviado
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Configurações do banco de dados
+    $host = '127.0.0.1';
+    $user = 'root';
+    $password = 'senac';
+    $dbName = 'minha_agenda';
+
+    // Conecta ao banco de dados
+    $conn = new mysqli($host, $user, $password, $dbName);
+
+    // Verifica a conexão
+    if ($conn->connect_error) {
+        die("Erro na conexão com o banco de dados: " . $conn->connect_error);
+    }
+
+    // Obtém dados do formulário
+    $usuarioDigitado = isset($_POST["usuario"]) ? $_POST["usuario"] : "";
+    $senhaDigitada = isset($_POST["senha"]) ? $_POST["senha"] : "";
+
+    // Consulta para verificar o usuário e senha
+    $sql = "SELECT * FROM usuarios WHERE username = '$usuarioDigitado' AND password = '$senhaDigitada'";
+    $result = $conn->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        // Usuário autenticado, redireciona para a página home
+        $row = $result->fetch_assoc();
+        $_SESSION['id_usuario'] = $row['id'];
+        $_SESSION['usuario_autenticado'] = $row['username'];
+        header("Location: home.php");
+        exit();
+    } else {
+        // Exibe mensagem de erro se a autenticação falhar
+        echo '<div class="alert alert-danger" role="alert">Usuário ou senha incorretos.</div>';
+    }
+
+    // Fecha a conexão com o banco de dados
+    $conn->close();
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -12,30 +53,6 @@
 <body>
 
 <div class="container mt-5">
-    <?php
-    // Verifica se o formulário de login foi enviado
-    if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        // Variáveis de usuário e senha (substitua pelos valores desejados)
-        $usuarioCorreto = "leo";
-        $senhaCorreta = "leo";
-
-        // Obtém dados do formulário
-        $usuarioDigitado = isset($_POST["usuario"]) ? $_POST["usuario"] : "";
-        $senhaDigitada = isset($_POST["senha"]) ? $_POST["senha"] : "";
-
-        // Verifica usuário e senha
-        if ($usuarioDigitado == $usuarioCorreto && $senhaDigitada == $senhaCorreta) {
-            $_SESSION['usuario_autenticado'] = $usuarioDigitado;
-            // Redireciona para a página home se a autenticação for bem-sucedida
-            header("Location: home.php");
-            exit();
-        } else {
-            // Exibe mensagem de erro se a autenticação falhar
-            echo '<div class="alert alert-danger" role="alert">Usuário ou senha incorretos.</div>';
-        }
-    }
-    ?>
-
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">

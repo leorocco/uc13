@@ -1,4 +1,3 @@
-
 <?php
 // Inicie a sessão na página home.php
 session_start();
@@ -9,9 +8,19 @@ if (!isset($_SESSION['usuario_autenticado'])) {
     exit();
 }
 
-// Variável de sessão para armazenar os contatos
-if (!isset($_SESSION['contatos'])) {
-    $_SESSION['contatos'] = array();
+// Configurações do banco de dados
+$host = '127.0.0.1';
+$user = 'root';
+$password = 'senac';
+$dbName = 'minha_agenda';
+
+// Conecta ao banco de dados
+$conn = new mysqli($host, $user, $password, $dbName);
+
+
+// Verifica a conexão
+if ($conn->connect_error) {
+    die("Erro na conexão com o banco de dados: " . $conn->connect_error);
 }
 
 // Adicione um novo contato se o formulário for enviado
@@ -21,10 +30,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $endereco = isset($_POST["endereco"]) ? $_POST["endereco"] : "";
 
     if ($nome != "" && $telefone != "" && $endereco != "") {
-        $contato = array("nome" => $nome, "telefone" => $telefone, "endereco" => $endereco);
-        $_SESSION['contatos'][] = $contato;
+        $sql = "INSERT INTO contatos (nome, telefone, endereco, id_usuario) VALUES ('$nome', '$telefone', '$endereco', '{$_SESSION['id_usuario']}')";
+        if ($conn->query($sql) === TRUE) {
+            // Adiciona o contato na sessão se a inserção for bem-sucedida
+            $contato = array("nome" => $nome, "telefone" => $telefone, "endereco" => $endereco);
+            $_SESSION['contatos'][] = $contato;
+        } else {
+            echo "Erro ao inserir o contato: " . $conn->error;
+        }
     }
 }
+
+// Consulta SQL para obter os contatos do usuário atual
+$sql = "SELECT * FROM contatos WHERE id_usuario = '{$_SESSION['id_usuario']}'";
+$result = $conn->query($sql);
+
+// Array para armazenar os contatos recuperados do banco de dados
+$contatosFromDB = array();
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $contatosFromDB[] = $row;
+    }
+}
+
+// Fecha a conexão com o banco de dados
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -41,6 +71,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="jumbotron">
         <h1 class="display-4">Bem-vindo, <?php echo $_SESSION['usuario_autenticado']; ?>!</h1>
         <p class="lead">Esta é a sua página inicial.</p>
+        <!-- Botão de logout -->
+        <a href="logout.php" class="btn btn-primary">Logout</a>
     </div>
 
     <div class="row">
@@ -66,7 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h2>Lista de Contatos</h2>
             <ul class="list-group">
                 <?php
-                foreach ($_SESSION['contatos'] as $contato) {
+                foreach ($contatosFromDB as $contato) {
                     echo '<li class="list-group-item">';
                     echo '<strong>' . $contato['nome'] . '</strong><br>';
                     echo 'Telefone: ' . $contato['telefone'] . '<br>';
