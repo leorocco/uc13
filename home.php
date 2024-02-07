@@ -102,7 +102,9 @@ $conn->close();
                     echo '<li class="list-group-item">';
                     echo '<strong>' . $contato['nome'] . '</strong><br>';
                     echo 'Telefone: ' . $contato['telefone'] . '<br>';
-                    echo 'Endereço: ' . $contato['endereco'];
+                    echo 'Endereço: ' . $contato['endereco'] . '<br>';;
+                    // Link de Edição 
+                    echo '<a href="editar_contato.php?id=' . $contato['id'] . '" class="btn btn-warning btn-sm mt-2">Editar</a>';
                     echo '</li>';
                 }
                 ?>
