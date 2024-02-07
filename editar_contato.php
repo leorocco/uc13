@@ -1,6 +1,11 @@
 <?php
+session_start();
 
-
+// Verifique se o usuário está autenticado
+if (!isset($_SESSION['usuario_autenticado'])) {
+    header("Location: index.php");
+    exit();
+}
 
 // Configurações do banco de dados
 $host = '127.0.0.1';
