@@ -32,9 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($nome != "" && $telefone != "" && $endereco != "") {
         $sql = "INSERT INTO contatos (nome, telefone, endereco, id_usuario) VALUES ('$nome', '$telefone', '$endereco', '{$_SESSION['id_usuario']}')";
         if ($conn->query($sql) === TRUE) {
-            // Adiciona o contato na sessão se a inserção for bem-sucedida
-            $contato = array("nome" => $nome, "telefone" => $telefone, "endereco" => $endereco);
-            $_SESSION['contatos'][] = $contato;
+            $_SESSION['tipo_alerta'] = 'success';
+            $_SESSION['texto_alerta'] = "Contato Adicionado com sucesso!";
         } else {
             echo "Erro ao inserir o contato: " . $conn->error;
         }
@@ -66,6 +65,15 @@ $conn->close();
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 </head>
 <body>
+
+<?php
+    if (isset($_SESSION['texto_alerta'])){
+        echo '<div class="alert alert-'.$_SESSION['tipo_alerta'].'" role="alert">';
+        echo $_SESSION['texto_alerta'].'</div>';
+        unset($_SESSION['texto_alerta']);
+        unset($_SESSION['tipo_alerta']);
+    }
+?>
 
 <div class="container mt-5">
     <div class="jumbotron">
