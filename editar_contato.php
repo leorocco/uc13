@@ -59,12 +59,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $resultado = mysqli_query($conn, $query);
 
     if ($resultado) {
-        // Redirecionar após a atualização bem-sucedida
+        $_SESSION['tipo_alerta'] = 'success';
+        $_SESSION['texto_alerta'] = "Contato Atualizado com sucesso!";
         header("Location: home.php");
         exit();
     } else {
         // Tratar erro, se houver
-        echo "Erro ao atualizar o contato: " . mysqli_error($conexao);
+        $_SESSION['tipo_alerta'] = 'error';
+        $_SESSION['texto_alerta'] = "Erro ao atualizar o contato: " . mysqli_error($conexao);
     }
 }
 
