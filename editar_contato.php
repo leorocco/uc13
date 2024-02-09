@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET") {
         $idContato = $_GET['id'];
 
         // Buscar informações do contato no banco de dados
-        $query = "SELECT * FROM contatos WHERE id = $idContato";
+        $query = "SELECT * FROM contatos WHERE id = $idContato" ;
         $resultado = mysqli_query($conn, $query);
 
         // Verificar se o contato foi encontrado

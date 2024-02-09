@@ -35,7 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['tipo_alerta'] = 'success';
             $_SESSION['texto_alerta'] = "Contato Adicionado com sucesso!";
         } else {
-            echo "Erro ao inserir o contato: " . $conn->error;
+            $_SESSION['tipo_alerta'] = 'error';
+            $_SESSION['texto_alerta'] = "Erro ao inserir o contato: " . $conn->error;
         }
     }
 }
