@@ -105,6 +105,8 @@ $conn->close();
                     echo 'Endereço: ' . $contato['endereco'] . '<br>';;
                     // Link de Edição 
                     echo '<a href="editar_contato.php?id=' . $contato['id'] . '" class="btn btn-warning btn-sm mt-2">Editar</a>';
+                     // Botão de Exclusão 
+                    echo '<a href="#" class="btn btn-danger btn-sm mt-2 ml-2" data-toggle="modal" data-target="#confirmarExclusao' . $contato['id'] .'">Excluir</a>';
                     echo '</li>';
                 }
                 ?>
@@ -113,9 +115,49 @@ $conn->close();
     </div>
 </div>
 
+<!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="confirmarExclusao" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteLabel">Confirmar Exclusão</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="contatoExclusao"></p>
+                <input type="hidden" id="contatoIdExclusao">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmarExclusaoBtn">Excluir</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script>
+    $(document).ready(function(){
+        // Captura o ID do contato quando o botão de exclusão é clicado
+        $(".excluirContato").click(function(){
+            var contatoId = $(this).data('id');
+            var contatoNome = $(this).closest('li').find('strong').text();
+            $("#contatoExclusao").text("Tem certeza de que deseja excluir o contato '" + contatoNome + "'?");
+            $("#contatoIdExclusao").val(contatoId);
+            $("#confirmarExclusao").modal('show');
+        });
+
+        // Ao clicar no botão de confirmação de exclusão, redireciona para a página de exclusão com o ID do contato
+        $("#confirmarExclusaoBtn").click(function(){
+            var contatoId = $("#contatoIdExclusao").val();
+            window.location.href = "excluir_contato.php?id=" + contatoId;
+        });
+    });
+</script>
+
 
 </body>
 </html>
